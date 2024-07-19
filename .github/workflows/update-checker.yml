@@ -1,6 +1,6 @@
-# Description: jellyfin version update checker
+# Description: openresty version update checker
 
-name: Jellyfin Update Checker
+name: OpenResty Update Checker
 
 on:
   workflow_dispatch:
@@ -13,13 +13,13 @@ jobs:
 
     steps:
 
-    - name: Get latest version of jellyfin
+    - name: Get latest version of  y
       id: getVersion
       run: |
-        version=$(wget -qO- -t1 -T2 https://api.github.com/repos/jellyfin/jellyfin/releases/latest | grep '"name"' | awk -F "\"" '{printf $4}')
+        version=$(wget -qO- -t1 -T2 https://api.github.com/repos/openresty/openresty/releases/latest | grep '"name"' | awk -F "\"" '{printf $4}')
         echo "curentVersion=$version" >> $GITHUB_OUTPUT
 
-    - name: Compare jellyfin version
+    - name: Compare openresty version
       id: cacheVersion
       uses: actions/cache@v4
       with:
@@ -35,7 +35,7 @@ jobs:
       if: steps.cacheVersion.outputs.cache-hit != 'true'
       uses: peter-evans/repository-dispatch@v3
       with:
-        event-type: Jellyfin Image Update
+        event-type: OpenResty Image Update
         
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2

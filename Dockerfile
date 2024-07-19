@@ -1,20 +1,16 @@
 # syntax=docker/dockerfile:1
 
-# Docker build arguments
-ARG DOTNET_VERSION
+# build openresty
+FROM alpine AS builder
 
-# build jellyfin server
-FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION-alpine AS server
+ARG OPENRESTY_VERSION
 
-ARG JELLYFIN_VERSION
-ARG DOTNET_CLI_TELEMETRY_OPTOUT=1
+WORKDIR /tmp/openresty
 
-WORKDIR /tmp/jellyfin
-
-ADD https://github.com/jellyfin/jellyfin/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../jellyfin.tar.gz
+ADD https://github.com/openresty/openresty/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../openresty.tar.gz
 
 RUN set -ex; \
-    tar xf ../jellyfin.tar.gz --strip-components=1; \
+    tar xf ../openresty.tar.gz --strip-components=1; \
     dotnet publish \
         Jellyfin.Server \
         --self-contained \
@@ -30,16 +26,16 @@ RUN set -ex; \
         ../* \
     ;
 
-# build jellyfin-web client
+# build openresty-web client
 FROM node:lts-alpine AS web
 
 ARG JELLYFIN_VERSION
 
 ENV JELLYFIN_VERSION=${JELLYFIN_VERSION}
 
-WORKDIR /tmp/jellyfin-web
+WORKDIR /tmp/openresty-web
 
-ADD https://github.com/jellyfin/jellyfin-web/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../jellyfin-web.tar.gz
+ADD https://github.com/openresty/openresty-web/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../openresty-web.tar.gz
 
 RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
@@ -53,7 +49,7 @@ RUN set -ex; \
       nasm \
       python3 \
     ; \
-    tar xf ../jellyfin-web.tar.gz --strip-components=1; \
+    tar xf ../openresty-web.tar.gz --strip-components=1; \
     npm ci --no-audit --unsafe-perm; \
     npm run build:production; \
     apk del --no-network .build-deps; \
@@ -64,15 +60,15 @@ RUN set -ex; \
         ../* \
     ;
 
-# build jellyfin-ffmpeg
+# build openresty-ffmpeg
 FROM alpine as ffmpeg
 
 ARG FFMPEG_VERSION
 ARG FFMPEG_PREFIX=/ffmpeg
 
-WORKDIR /tmp/jellyfin-ffmpeg
+WORKDIR /tmp/openresty-ffmpeg
 
-ADD https://github.com/jellyfin/jellyfin-ffmpeg/archive/refs/tags/v$FFMPEG_VERSION.tar.gz ../jellyfin-ffmpeg.tar.gz
+ADD https://github.com/openresty/openresty-ffmpeg/archive/refs/tags/v$FFMPEG_VERSION.tar.gz ../openresty-ffmpeg.tar.gz
 
 COPY --chmod=755 deplib/ ../
 
@@ -125,7 +121,7 @@ RUN set -ex; \
         zimg-dev \
         zlib-dev \
     ; \
-    tar xf ../jellyfin-ffmpeg.tar.gz --strip-components=1; \
+    tar xf ../openresty-ffmpeg.tar.gz --strip-components=1; \
     cat debian/patches/*.patch | patch -p1; \
     ./configure \
       --prefix=$FFMPEG_PREFIX \
@@ -191,21 +187,21 @@ FROM clion007/alpine
 LABEL mantainer="Clion Nihe Email: clion007@126.com"
 
 ARG BRANCH="edge"
-ARG JELLYFIN_PATH=/usr/lib/jellyfin/
-ARG JELLYFIN_WEB_PATH=/usr/share/jellyfin-web/
+ARG JELLYFIN_PATH=/usr/lib/openresty/
+ARG JELLYFIN_WEB_PATH=/usr/share/openresty-web/
 
 # Default environment variables for the Jellyfin invocation
 ENV JELLYFIN_LOG_DIR=/config/log \
     JELLYFIN_DATA_DIR=/config/data \
     JELLYFIN_CACHE_DIR=/config/cache \
     JELLYFIN_CONFIG_DIR=/config/config \
-    JELLYFIN_WEB_DIR=/usr/share/jellyfin-web \
+    JELLYFIN_WEB_DIR=/usr/share/openresty-web \
     XDG_CACHE_HOME=${JELLYFIN_CACHE_DIR}
 
 # https://github.com/dlemstra/Magick.NET/issues/707#issuecomment-785351620
 ENV MALLOC_TRIM_THRESHOLD_=131072
 
-# add jellyfin files
+# add openresty files
 COPY --from=server /server $JELLYFIN_PATH
 COPY --from=web /web $JELLYFIN_WEB_PATH
 COPY --from=ffmpeg /ffmpeg/bin /usr/bin/
@@ -230,15 +226,15 @@ RUN set -ex; \
     shadow \
   ; \
   \
-  # set jellyfin process user and group
-  groupadd -g 101 jellyfin; \
-  useradd -u 100 -s /bin/nologin -M -g 101 jellyfin; \
-  ln -s /usr/lib/jellyfin/jellyfin /usr/bin/jellyfin; \
-  chown jellyfin:jellyfin /usr/bin/jellyfin; \
+  # set openresty process user and group
+  groupadd -g 101 openresty; \
+  useradd -u 100 -s /bin/nologin -M -g 101 openresty; \
+  ln -s /usr/lib/openresty/openresty /usr/bin/openresty; \
+  chown openresty:openresty /usr/bin/openresty; \
   \
   # make dir for config and data
   mkdir -p /config; \
-  chown jellyfin:jellyfin /config; \
+  chown openresty:openresty /config; \
   \
   apk del --no-network .user-deps; \
   rm -rf \
