@@ -74,6 +74,7 @@ RUN set -ex; \
       --with-http_v3_module \
       --with-http_xslt_module=dynamic \
       --with-ipv6 \
+      --with-luajit \
       --with-mail=dynamic \
       --with-mail_ssl_module \
       --with-md5-asm \
