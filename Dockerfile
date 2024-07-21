@@ -4,177 +4,93 @@
 FROM alpine AS builder
 
 ARG OPENRESTY_VERSION
+ARG PREFIX="/openresty"
+ARG BASENAME="nginx"
+ARG CONFIG_PATH="/config"
 
 WORKDIR /tmp/openresty
 
-ADD https://github.com/openresty/openresty/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../openresty.tar.gz
-
-RUN set -ex; \
-    tar xf ../openresty.tar.gz --strip-components=1; \
-    dotnet publish \
-        Jellyfin.Server \
-        --self-contained \
-        --configuration Release \
-        --runtime linux-musl-x64 \
-        --output=/server \
-        "-p:DebugSymbols=false" \
-        "-p:DebugType=none" \
-    ; \
-    rm -rf \
-        /var/cache/apk/* \
-        /var/tmp/* \
-        ../* \
-    ;
-
-# build openresty-web client
-FROM node:lts-alpine AS web
-
-ARG JELLYFIN_VERSION
-
-ENV JELLYFIN_VERSION=${JELLYFIN_VERSION}
-
-WORKDIR /tmp/openresty-web
-
-ADD https://github.com/openresty/openresty-web/archive/refs/tags/v$JELLYFIN_VERSION.tar.gz ../openresty-web.tar.gz
-
-RUN set -ex; \
-    apk add --no-cache --virtual .build-deps \
-      alpine-sdk \
-      autoconf \
-      libpng-dev \
-      gifsicle \
-      automake \
-      libtool \
-      musl-dev \
-      nasm \
-      python3 \
-    ; \
-    tar xf ../openresty-web.tar.gz --strip-components=1; \
-    npm ci --no-audit --unsafe-perm; \
-    npm run build:production; \
-    apk del --no-network .build-deps; \
-    mv dist /web; \
-    rm -rf \
-        /var/cache/apk/* \
-        /var/tmp/* \
-        ../* \
-    ;
-
-# build openresty-ffmpeg
-FROM alpine as ffmpeg
-
-ARG FFMPEG_VERSION
-ARG FFMPEG_PREFIX=/ffmpeg
-
-WORKDIR /tmp/openresty-ffmpeg
-
-ADD https://github.com/openresty/openresty-ffmpeg/archive/refs/tags/v$FFMPEG_VERSION.tar.gz ../openresty-ffmpeg.tar.gz
+ADD https://openresty.org/download/openresty-$OPENRESTY_VERSION.tar.gz ../openresty.tar.gz
 
 COPY --chmod=755 deplib/ ../
 
 RUN set -ex; \
-    apk add --no-cache --upgrade \
-        alpine-sdk \
-        alsa-lib-dev \
-        bzip2-dev \
-        coreutils \
-        cunit-dev \
-        dav1d-dev \
-        fdk-aac-dev \
-        ffmpeg-libs \
-        ffmpeg-dev \
-        fontconfig-dev \
-        freetype-dev \
-        fribidi-dev \
-        gmp-dev \
-        imlib2-dev \
-        intel-media-driver-dev \
-        intel-media-sdk-dev \
-        lame-dev \
-        libass-dev \
-        libbluray-dev \
-        libdrm-dev \
-        libogg-dev \
-        libopenmpt-dev \
-        libplacebo-dev \
-        libpng-dev \
-        libtheora-dev \
-        libtool \
-        libva-dev \
-        libva-intel-driver \
-        libvorbis-dev \
-        libvpx-dev \
-        libwebp-dev \
-        mesa-dev \
-        musl-dev \
-        nasm \
-        opencl-dev \
-        openssl-dev \
-        opus-dev \
-        perl-dev \
-        shaderc-dev \
-        util-linux-dev \
-        vulkan-loader-dev \
-        x264-dev \
-        x265-dev \
-        xz-dev \
-        zimg-dev \
-        zlib-dev \
+    apk add --no-cache --virtual .build-deps \
+      linux-headers \
+      gd-dev \
+      geoip-dev \
+      openssl-dev \
+      libxml2-dev \
+      libxslt-dev
+	    luajit-dev \
+      pcre-dev \
+      perl-dev \
+      pkgconf \
+      readline-dev \
+      zlib-dev \
     ; \
-    tar xf ../openresty-ffmpeg.tar.gz --strip-components=1; \
-    cat debian/patches/*.patch | patch -p1; \
+    tar xf ../openresty.tar.gz --strip-components=1; \
     ./configure \
-      --prefix=$FFMPEG_PREFIX \
-      --target-os=linux \
-      --extra-version=Jellyfin \
-      --disable-asm \
-      --disable-debug \
-      --disable-doc \
-      --disable-ffplay \
-      --disable-librtmp \
-      --disable-libxcb \
-      --disable-sdl2 \
-      --disable-shared \
-      --disable-xlib \
-      --enable-fontconfig \
-      --enable-gmp \
-      --enable-gpl \
-      --enable-libass \
-      --enable-libbluray \
-      --enable-libdav1d \
-      --enable-libdrm \
-      --enable-libfdk-aac \
-      --enable-libfontconfig \
-      --enable-libfreetype \
-      --enable-libfribidi \
-      --enable-libmfx \
-      --enable-libmp3lame \
-      --enable-libopenmpt \
-      --enable-libopus \
-      --enable-libplacebo \
-      --enable-libshaderc \
-      --enable-libtheora \
-      --enable-libvorbis \
-      --enable-libvpx \
-      --enable-libwebp \
-      --enable-libx264 \
-      --enable-libx265 \
-      --enable-libzimg \
-      --enable-nonfree \
-      --enable-opencl \
-      --enable-openssl \
-      --enable-pic \
-      --enable-pthreads \
-      --enable-static \
-      --enable-vaapi \
-      --enable-version3 \
-      --enable-vulkan \
+      --prefix=$PREFIX/usr/lib/$BASENAME \
+      --sbin-path=$PREFIX/usr/sbin/$BASENAME \
+      --modules-path=$PREFIX/usr/lib/$BASENAME/modules \
+      --conf-path=$PREFIX/etc/$BASENAME/$BASENAME.conf \
+      --pid-path=/var/run/$BASENAME/$BASENAME.pid \
+      --lock-path=/var/run/$BASENAME/$BASENAME.lock \
+      --error-log-path=$CONFIG_PATH/log/$BASENAME/error.log \
+      --http-log-path=$CONFIG_PATH/log/$BASENAME/access.log \
+      \
+      --http-client-body-temp-path=/var/tmp/$BASENAME/client_body \
+      --http-proxy-temp-path=/var/tmp/$BASENAME/proxy \
+      --http-fastcgi-temp-path=/var/tmp/$BASENAME/fastcgi \
+      --http-uwsgi-temp-path=/var/tmp/$BASENAME/uwsgi \
+      --http-scgi-temp-path=/var/tmp/$BASENAME/scgi \
+      --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
+      \
+      --user=$BASENAME \
+      --group=$BASENAME \
+      \
+      --with-compat \
+      --with-file-aio \
+      --with-http_addition_module \
+      --with-http_auth_request_module \
+      --with-http_dav_module \
+      --with-http_degradation_module \
+      --with-http_flv_module \
+      --with-http_geoip_module=dynamic \
+      --with-http_gunzip_module \
+      --with-http_gzip_static_module \
+      --with-http_image_filter_module=dynamic \
+      --with-http_mp4_module \
+      --with-http_perl_module=dynamic \
+      --with-http_random_index_module \
+      --with-http_realip_module \
+      --with-http_secure_link_module \
+      --with-http_slice_module \
+      --with-http_ssl_module \
+      --with-http_stub_status_module \
+      --with-http_sub_module \
+      --with-http_v2_module \
+      --with-http_v3_module \
+      --with-http_xslt_module=dynamic \
+      --with-ipv6 \
+      --with-mail=dynamic \
+      --with-mail_ssl_module \
+      --with-md5-asm \
+      --with-pcre-jit \
+      --with-sha1-asm \
+      --with-stream=dynamic \
+      --with-stream_geoip_module=dynamic \
+      --with-stream_realip_module \
+      --with-stream_ssl_module \
+      --with-stream_ssl_preread_module \
+      --with-threads \
     ; \
-    make -j $(nproc) install $FFMPEG_PREFIX; \
+    make -j $(nproc) install; \
     \
     # build ffmpeg lib files
-    ../cplibfiles.sh $FFMPEG_PREFIX/bin/ffmpeg $FFMPEG_PREFIX/library; \
-    ../cplibfiles.sh $FFMPEG_PREFIX/bin/ffprobe $FFMPEG_PREFIX/library; \
+    ../cplibfiles.sh $PREFIX/sbin/nginx $PREFIX/library; \
+    apk del --no-network .build-deps; \
     rm -rf \
         /var/cache/apk/* \
         /var/tmp/* \
@@ -198,9 +114,6 @@ ENV JELLYFIN_LOG_DIR=/config/log \
     JELLYFIN_WEB_DIR=/usr/share/openresty-web \
     XDG_CACHE_HOME=${JELLYFIN_CACHE_DIR}
 
-# https://github.com/dlemstra/Magick.NET/issues/707#issuecomment-785351620
-ENV MALLOC_TRIM_THRESHOLD_=131072
-
 # add openresty files
 COPY --from=server /server $JELLYFIN_PATH
 COPY --from=web /web $JELLYFIN_WEB_PATH
@@ -216,12 +129,9 @@ RUN set -ex; \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/main \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
     su-exec \
-    icu-libs \
-    libva-intel-driver \
-    intel-media-driver \
-    font-droid-nonlatin \
+    logrotate \
+    apache2-utils \
   ; \
-  find /usr/share/fonts/droid-nonlatin/ -type f -not -name 'DroidSansFallbackFull.ttf' -delete; \
   apk add --no-cache --virtual .user-deps \
     shadow \
   ; \
