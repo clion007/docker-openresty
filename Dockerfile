@@ -74,7 +74,6 @@ RUN set -ex; \
       --with-http_v3_module \
       --with-http_xslt_module=dynamic \
       --with-ipv6 \
-      --with-luajit \
       --with-mail=dynamic \
       --with-mail_ssl_module \
       --with-md5-asm \
@@ -87,10 +86,11 @@ RUN set -ex; \
       --with-stream_ssl_preread_module \
       --with-threads \
     ; \
+    make -j ${nproc}; \
     make -j $(nproc) install; \
     \
     # build ffmpeg lib files
-    ../cplibfiles.sh $PREFIX/sbin/nginx $PREFIX/library; \
+    ../cplibfiles.sh $PREFIX/sbin/nginx /library; \
     apk del --no-network .build-deps; \
     rm -rf \
         /var/cache/apk/* \
@@ -104,22 +104,10 @@ FROM clion007/alpine
 LABEL mantainer="Clion Nihe Email: clion007@126.com"
 
 ARG BRANCH="edge"
-ARG JELLYFIN_PATH=/usr/lib/openresty/
-ARG JELLYFIN_WEB_PATH=/usr/share/openresty-web/
-
-# Default environment variables for the Jellyfin invocation
-ENV JELLYFIN_LOG_DIR=/config/log \
-    JELLYFIN_DATA_DIR=/config/data \
-    JELLYFIN_CACHE_DIR=/config/cache \
-    JELLYFIN_CONFIG_DIR=/config/config \
-    JELLYFIN_WEB_DIR=/usr/share/openresty-web \
-    XDG_CACHE_HOME=${JELLYFIN_CACHE_DIR}
 
 # add openresty files
-COPY --from=server /server $JELLYFIN_PATH
-COPY --from=web /web $JELLYFIN_WEB_PATH
-COPY --from=ffmpeg /ffmpeg/bin /usr/bin/
-COPY --from=ffmpeg /ffmpeg/library /
+COPY --from=builder /openresty /
+COPY --from=builder /library /
 
 # add local files
 COPY --chmod=755 root/ /
@@ -131,21 +119,37 @@ RUN set -ex; \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
     su-exec \
     logrotate \
-    apache2-utils \
   ; \
   apk add --no-cache --virtual .user-deps \
     shadow \
   ; \
   \
   # set openresty process user and group
-  groupadd -g 101 openresty; \
-  useradd -u 100 -s /bin/nologin -M -g 101 openresty; \
-  ln -s /usr/lib/openresty/openresty /usr/bin/openresty; \
-  chown openresty:openresty /usr/bin/openresty; \
+  groupadd -g 101 nginx; \
+  useradd -u 100 -s /bin/nologin -M -g 101 nginx; \
+  ln -s /usr/sbin/nginx /usr/bin/openresty; \
+  chown nginx:nginx /usr/bin/openresty; \
   \
   # make dir for config and data
   mkdir -p /config; \
-  chown openresty:openresty /config; \
+  chown nginx:nginx /config; \
+  \  
+  # configure nginx
+  echo '# https://httpoxy.org/\n\
+fastcgi_param  HTTP_PROXY         "";\n\
+# http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_split_path_info\n\
+fastcgi_param  PATH_INFO          $fastcgi_path_info;\n\
+# https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/#connecting-nginx-to-php-fpm\n\
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;\n\
+# Send HTTP_HOST as SERVER_NAME. If HTTP_HOST is blank, send the value of server_name from nginx (default is `_`)\n\
+fastcgi_param  SERVER_NAME        $host;' >> \
+    /etc/nginx/fastcgi_params; \
+
+  # fix logrotate
+  sed -i "s#/var/log/messages {}.*# #g" \
+    /etc/logrotate.conf; \
+  sed -i 's#/usr/sbin/logrotate /etc/logrotate.conf#/usr/sbin/logrotate /etc/logrotate.conf -s /config/log/logrotate.status#g' \
+    /etc/periodic/daily/logrotate; \
   \
   apk del --no-network .user-deps; \
   rm -rf \
@@ -153,9 +157,13 @@ RUN set -ex; \
       /var/tmp/* \
       /tmp/* \
   ;
-  
+
 # ports
-EXPOSE 8096 8920 7359/udp 1900/udp
+EXPOSE 80 443 8080 8443
+
+# Use SIGQUIT instead of default SIGTERM to cleanly drain requests
+# See https://github.com/openresty/docker-openresty/blob/master/README.md#tips--pitfalls
+STOPSIGNAL SIGQUIT
 
 # entrypoint set in clion007/alpine base image
-CMD ["--ffmpeg=/usr/bin/ffmpeg"]
+CMD [""-g","daemon off;""]

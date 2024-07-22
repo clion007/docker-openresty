@@ -1,29 +1,76 @@
 #!/bin/sh
 set -e
 
-# create directories
+# make folders
 mkdir -p \
-    /config/log \
-    /config/data/plugins/configurations \
-    /config/data/transcodes \
-    /config/cache \
-    /data \
-    /transcode
+    /config/www \
+    /config/keys \
+    /config/nginx \
+    /config/log/nginx \
+    /var/tmp/nginx/proxy \
+    /var/tmp/nginx/client_body
 
-# permissions
-chown -R jellyfin:jellyfin \
-    /config \
-    /transcode
-chmod -R 777 /config
+# permissions
+chown -R nginx:nginx \
+    /config/keys \
+    /config/nginx \
+    /config/log/nginx
+
+chmod -R g+w \
+    /config/www \
+    /var/tmp/nginx/proxy \
+    /var/tmp/nginx/client_body
+
+chmod -R 644 /etc/logrotate.d
+
+if [[ -f "/config/log/logrotate.status" ]]; then
+    chmod 600 /config/log/logrotate.status
+fi
+
+# precreate log files
+for file in /config/log/nginx/access.log /config/log/nginx/error.log; do
+    if [[ ! -f "${file}" ]]; then
+        touch "${file}"
+    fi
+done
+
+# copy default config files if they don't exist
+if [[ ! -f /config/nginx/nginx.conf ]]; then
+    cp /etc/nginx/nginx.conf.sample /config/nginx/nginx.conf
+fi
+if [[ ! -f /config/nginx/ssl.conf ]]; then
+    cp /etc/nginx/conf.d/ssl.conf.sample /config/nginx/ssl.conf
+fi
+if [[ ! -f /config/nginx/conf.d/default.conf ]]; then
+    cp /etc/nginx/conf.d/default.conf.sample /config/nginx/conf.d/default.conf
+fi
+
+# copy index.html if no index file exists
+INDEX_EXISTS=false
+for file in /config/www/index.*; do
+    if [[ -e "${file}" ]]; then
+        INDEX_EXISTS=true
+        break
+    fi
+done
+if [[ ${INDEX_EXISTS} == false ]] && grep -Eq '^\s*index[^#]*index\.html' /config/nginx/**/*.conf; then
+    cp /usr/lib/nginx/nginx/html/index.html /config/www/index.html
+fi
+if [[ ! -f /config/www/50x.html ]]; then
+    cp /usr/lib/nginx/nginx/html/50x.html /config/www/50x.html
+fi
+
+# Set worker_processes
+touch /config/nginx/worker_processes.conf
+if ! grep -q 'worker_processes' /config/nginx/worker_processes.conf; then
+    WORKER_PROCESSES=$(nproc)
+    echo "Setting worker_processes to ${WORKER_PROCESSES}"
+    echo -e "# This file is auto-generated only on first start, based on the cpu cores detected. Feel free to change it to any other number or to auto to let nginx handle it automatically.\n\nworker_processes ${WORKER_PROCESSES};" >/config/nginx/worker_processes.conf
+fi
 
 # first arg is `--some-option`
 if [ "${1#-}" != "$1" ]; then
-	set -- jellyfin "$@"
-fi
-
-# allow the container to be started with `--user`
-if [ "$1" = 'jellyfin' -a "$(id -u)" = '0' ]; then
-    exec su-exec jellyfin "$0" "$@"
+	set -- nginx "$@"
 fi
 
 exec "$@"
