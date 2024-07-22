@@ -117,7 +117,6 @@ RUN set -ex; \
   apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/main \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
-    su-exec \
     logrotate \
   ; \
   apk add --no-cache --virtual .user-deps \
