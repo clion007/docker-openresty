@@ -79,7 +79,7 @@ fi
 
 # first arg is `--some-option`
 if [ "${1#-}" != "$1" ]; then
-	set -- nginx "$@"
+	set -- openresty "$@"
 fi
 
 exec "$@"

@@ -126,7 +126,7 @@ RUN set -ex; \
   # set openresty process user and group
   groupadd -g 101 nginx; \
   useradd -u 100 -s /bin/nologin -M -g 101 nginx; \
-  ln -s /usr/sbin/nginx /usr/bin/openresty; \
+  ln -s /usr/lib/nginx/bin/openresty /usr/bin/openresty; \
   chown nginx:nginx /usr/bin/openresty; \
   \
   # make dir for config and data
