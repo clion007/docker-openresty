@@ -12,21 +12,15 @@ pcre_jit on;
 # Configures default error logger.
 error_log /config/log/nginx/error.log;
 
-# Includes files with directives to load dynamic modules.
-include /etc/nginx/modules/*.conf;
-
-# Include files with config snippets into the root context.
-include /etc/nginx/conf.d/*.conf;
+pid /run/nginx/nginx.pid;
 
 events {
-    # The maximum number of simultaneous connections that can be opened by
-    # a worker process.
+    # The maximum number of simultaneous connections that can be opened by a worker process.
     worker_connections 1024;
 }
 
 http {
-    # Includes mapping of file name extensions to MIME types of responses
-    # and defines the default type.
+    # Includes mapping of file name extensions to MIME types of responses and defines the default type.
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
@@ -75,4 +69,3 @@ http {
     include /config/nginx/conf.d/*.conf;
 }
 
-pid /run/nginx/nginx.pid;
