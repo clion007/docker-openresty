@@ -12,6 +12,12 @@ pcre_jit on;
 # Configures default error logger.
 error_log /config/log/nginx/error.log;
 
+# Includes files with directives to load dynamic modules.
+include /etc/nginx/modules/*.conf;
+
+# Include files with config snippets into the root context.
+include /etc/nginx/conf.d/*.conf;
+
 pid /run/nginx/nginx.pid;
 
 events {
@@ -62,6 +68,13 @@ http {
 
     # Enable gzipping of responses.
     gzip on;
+    gzip_buffers 4 16K;
+    gzip_comp_level 6;
+    gzip_min_length 1k;
+    gzip_types application/javascript application/xml text/plain text/css;
+
+    # ie browser below ie6 not suport gzip
+    gzip_disable "MSIE [1-6]\."; 
 
     # Set the Vary HTTP header as defined in the RFC 2616. Default is 'off'.
     gzip_vary on;
