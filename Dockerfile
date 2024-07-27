@@ -10,7 +10,7 @@ ARG CONFIG_PATH="/config"
 
 WORKDIR /tmp/openresty
 
-ADD https://openresty.org/download/openresty-$OPENRESTY_VERSION.tar.gz ../openresty.tar.gz
+ADD https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz ../openresty.tar.gz
 
 COPY --chmod=755 deplib/ ../
 
@@ -90,13 +90,56 @@ RUN set -ex; \
     make -j $(nproc) install; \
     \
     # build ffmpeg lib files
-    ../cplibfiles.sh $PREFIX/sbin/nginx /library; \
+    ../cplibfiles.sh $PREFIX/usr/lib/nginx/bin/openresty /library; \
     apk del --no-network .build-deps; \
     rm -rf \
         /var/cache/apk/* \
         /var/tmp/* \
         ../* \
     ;
+
+    # build luarocks
+    FROM alpine AS luarocks
+    
+    ARG LUAROCKS_VERSION
+    ARG PREFIX="/luarocks"
+    
+    WORKDIR /tmp/luarocks
+    
+    ADD https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz ../luarocks.tar.gz
+    
+    COPY --chmod=755 deplib/ ../
+    
+    RUN set -ex; \
+        apk add --no-cache --virtual .build-deps \
+          linux-headers \
+          gd-dev \
+          geoip-dev \
+          openssl-dev \
+          libxml2-dev \
+          libxslt-dev
+          luajit-dev \
+          pcre-dev \
+          perl-dev \
+          pkgconf \
+          readline-dev \
+          zlib-dev \
+        ; \
+        tar xf ../luarocks.tar.gz --strip-components=1; \
+        ./configure \
+          --prefix=$PREFIX/usr/lib/$BASENAME \
+        ; \
+        make -j ${nproc}; \
+        make -j $(nproc) install; \
+        \
+        # build ffmpeg lib files
+        ../cplibfiles.sh $PREFIX/sbin/nginx /library; \
+        apk del --no-network .build-deps; \
+        rm -rf \
+            /var/cache/apk/* \
+            /var/tmp/* \
+            ../* \
+        ;    
 
 # Build the final combined image
 FROM clion007/alpine
