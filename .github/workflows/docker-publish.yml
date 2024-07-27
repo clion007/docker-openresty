@@ -31,7 +31,7 @@ jobs:
         fi
         echo "openrestyVersion=$OPENRESTY_VERSION" >> $GITHUB_OUTPUT
         if [ -z ${{ inputs.LUAROCKS_VERSION }} ]; then
-          LUAROCKS_VERSION=$(wget -qO- -t1 -T2 https://api.github.com/repos/luarocks/luarocks/releases/latest | grep "tag_name" | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
+          LUAROCKS_VERSION=$(wget -qO- -t1 -T2 https://api.github.com/repos/luarocks/luarocks/tags | grep "name" | head -n 1 | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
         else
           LUAROCKS_VERSION=${{ inputs.LUAROCKS_VERSION }}
         fi
