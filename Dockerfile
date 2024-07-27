@@ -21,7 +21,7 @@ RUN set -ex; \
       geoip-dev \
       openssl-dev \
       libxml2-dev \
-      libxslt-dev
+      libxslt-dev \
 	    luajit-dev \
       pcre-dev \
       perl-dev \
