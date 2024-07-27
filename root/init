@@ -19,7 +19,7 @@ chown -R nginx:nginx \
     /config/nginx \
     /var/tmp/nginx \
     /config/log/nginx \
-    /var/run/openresty \
+    /var/run/openresty
 
 chmod -R g+w \
     /www
