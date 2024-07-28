@@ -123,9 +123,6 @@ RUN set -ex; \
           --prefix=$PREFIX/usr \
           --sysconfdir=$PREFIX/etc \
           --rocks-tree=$PREFIX/usr/local \
-          --with-lua=$PREFIX/usr \
-          --with-lua-include=/usr/include/luajit-2.1 \
-			    --with-lua-lib=$PREFIX/usr \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
