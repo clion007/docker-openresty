@@ -25,7 +25,6 @@ RUN set -ex; \
 	    luajit-dev \
       pcre-dev \
       perl-dev \
-      pkgconf \
       readline-dev \
       zlib-dev \
     ; \
@@ -103,6 +102,7 @@ RUN set -ex; \
     
     ARG LUAROCKS_VERSION
     ARG PREFIX="/luarocks"
+    ARG LUAVERSION="5.4"
     
     WORKDIR /tmp/luarocks
     
@@ -113,16 +113,18 @@ RUN set -ex; \
     RUN set -ex; \
         apk add --no-cache --virtual .build-deps \
           perl-dev \
-          build-base \ 
+          build-base \
+          luajit-dev \
           linux-headers \
+          lua${LUAVERSION}-dev \
         ; \
         tar xf ../luarocks.tar.gz --strip-components=1; \
-        mkdir -p $PREFIX/usr; \
         ./configure \
           --prefix=$PREFIX/usr \
           --sysconfdir=$PREFIX/etc \
           --rocks-tree=$PREFIX/usr/local \
           --with-lua=$PREFIX/usr \
+          --with-lua-include=/usr/include/luajit-2.1 \
 			    --with-lua-lib=$PREFIX/usr \
         ; \
         make -j ${nproc}; \
