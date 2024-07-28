@@ -122,6 +122,7 @@ RUN set -ex; \
           --sysconfdir=$PREFIX/etc \
           --rocks-tree=$PREFIX/usr/local \
           --with-lua=$PREFIX/usr \
+			    --with-lua-lib=$PREFIX/usr \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
