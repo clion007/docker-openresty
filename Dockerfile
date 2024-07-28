@@ -117,6 +117,7 @@ RUN set -ex; \
           linux-headers \
         ; \
         tar xf ../luarocks.tar.gz --strip-components=1; \
+        mkdir -p $PREFIX/usr; \
         ./configure \
           --prefix=$PREFIX/usr \
           --sysconfdir=$PREFIX/etc \
