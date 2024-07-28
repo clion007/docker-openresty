@@ -127,7 +127,7 @@ RUN set -ex; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
         \
-        # build ffmpeg lib files
+        # build lib files
         ../cplibfiles.sh $PREFIX/bin/luarocks /library; \
         apk del --no-network .build-deps; \
         rm -rf \
