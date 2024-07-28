@@ -122,7 +122,6 @@ RUN set -ex; \
           --sysconfdir=$PREFIX/etc \
           --rocks-tree=$PREFIX/usr/local \
           --with-lua=$PREFIX/usr \
-          --with-lua-include=$PREFIX/usr/share/luajit \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
@@ -157,6 +156,10 @@ RUN set -ex; \
   apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/main \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
+    pcre \
+    perl \
+    geoip \
+    luajit \
     logrotate \
   ; \
   apk add --no-cache --virtual .user-deps \
