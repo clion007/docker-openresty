@@ -88,7 +88,7 @@ RUN set -ex; \
     make -j ${nproc}; \
     make -j $(nproc) install; \
     \
-    # build ffmpeg lib files
+    # build lib files
     ../cplibfiles.sh $PREFIX/usr/lib/nginx/bin/openresty /library; \
     apk del --no-network .build-deps; \
     rm -rf \
