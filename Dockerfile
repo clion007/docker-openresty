@@ -166,6 +166,8 @@ RUN set -ex; \
     shadow \
   ; \
   \
+  luarocks install lua-resty-t1k --server https://luarocks.cn; \
+  \
   # set openresty process user and group
   groupadd -g 101 nginx; \
   useradd -u 100 -s /bin/nologin -M -g 101 nginx; \
