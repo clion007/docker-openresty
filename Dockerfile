@@ -34,7 +34,8 @@ RUN set -ex; \
     ./configure \
       --prefix=$PREFIX/usr/lib/$BASENAME \
       --sbin-path=$PREFIX/usr/sbin/$BASENAME \
-      --modules-path=$PREFIX/usr/lib/$BASENAME/modules \
+      --libdir=lib \
+      --modules-path=modules \
       --conf-path=$PREFIX/etc/$BASENAME/$BASENAME.conf \
       --pid-path=/var/run/$BASENAME/$BASENAME.pid \
       --lock-path=/var/run/$BASENAME/$BASENAME.lock \
@@ -119,9 +120,7 @@ RUN set -ex; \
         apk add --no-cache --virtual .build-deps \
           perl-dev \
           build-base \
-          # luajit-dev \
           linux-headers \
-          # lua${LUAVERSION}-dev \
         ; \
         tar xf ../luarocks.tar.gz --strip-components=1; \
         ./configure \
@@ -135,7 +134,7 @@ RUN set -ex; \
         make -j $(nproc) install; \
         \
         # build lib files
-        ../cplibfiles.sh $PREFIX/bin/luarocks /library; \
+        ../cplibfiles.sh $PREFIX/usr/bin/luarocks /library; \
         apk del --no-network .build-deps; \
         rm -rf \
             /var/cache/apk/* \
@@ -149,6 +148,9 @@ FROM clion007/alpine
 LABEL mantainer="Clion Nihe Email: clion007@126.com"
 
 ARG BRANCH="edge"
+
+# Add additional binaries into PATH for convenience
+ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
 
 # add openresty files
 COPY --from=builder /openresty /
