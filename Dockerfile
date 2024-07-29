@@ -88,10 +88,10 @@ RUN set -ex; \
       /openresty/usr/lib/nginx \
       /openresty/usr/lib/perl5; \
     \
-    cp -r -L -n /etc/nginx /openresty/etc/nginx; \
-    cp -r -L -n /usr/lib/nginx /openresty/usr/lib/nginx; \
+    cp -r -L -n /etc/nginx/* /openresty/etc/nginx/; \
+    cp -r -L -n /usr/lib/nginx/* /openresty/usr/lib/nginx/; \
     cp -r -L -n /usr/sbin/nginx /openresty/usr/sbin/nginx; \
-    cp -r -L -n /usr/lib/perl5 /openresty/usr/lib/perl5; \
+    cp -r -L -n /usr/lib/perl5/* /openresty/usr/lib/perl5/; \
     \
     # build lib files
     ../cplibfiles.sh /usr/lib/nginx/bin/openresty /library; \
@@ -136,9 +136,9 @@ RUN set -ex; \
           /luarocks/usr/bin \
           /luarocks/usr/share/lua; \
         \
-        cp -r -L -n /etc/luarocks /luarocks/etc/luarocks; \
+        cp -r -L -n /etc/luarocks/* /luarocks/etc/luarocks/; \
         cp -r -L -n /usr/bin/luarock* /luarocks/usr/bin/; \
-        cp -r -L -n /usr/share/lua /luarocks/usr/share/lua; \
+        cp -r -L -n /usr/share/lua/* /luarocks/usr/share/lua/; \
         \
         # build lib files
         ../cplibfiles.sh /usr/bin/luarocks /library; \
