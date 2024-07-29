@@ -16,14 +16,15 @@ COPY --chmod=755 deplib/ ../
 
 RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
-      make \
-      linux-headers \
+      build-base \
+      coreutils \
       gd-dev \
       geoip-dev \
-      openssl-dev \
       libxml2-dev \
       libxslt-dev \
+      linux-headers \
 	    luajit-dev \
+      openssl-dev \
       pcre-dev \
       perl-dev \
       readline-dev \
