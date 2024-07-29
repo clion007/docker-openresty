@@ -4,8 +4,6 @@
 FROM alpine AS builder
 
 ARG OPENRESTY_VERSION
-ARG BASENAME="nginx"
-ARG CONFIG_PATH="/config"
 
 WORKDIR /tmp/openresty
 
@@ -31,19 +29,19 @@ RUN set -ex; \
     ; \
     tar xf ../openresty.tar.gz --strip-components=1; \
     ./configure \
-      --prefix=/usr/lib/$BASENAME \
-      --sbin-path=/usr/sbin/$BASENAME \
-      --modules-path=/usr/lib/$BASENAME/modules \
-      --conf-path=/etc/$BASENAME/$BASENAME.conf \
-      --pid-path=/var/run/$BASENAME/$BASENAME.pid \
-      --lock-path=/var/run/$BASENAME/$BASENAME.lock \
-      --error-log-path=$CONFIG_PATH/log/$BASENAME/error.log \
-      --http-log-path=$CONFIG_PATH/log/$BASENAME/access.log \
+      --prefix=/usr/lib/nginx \
+      --sbin-path=/usr/sbin/nginx \
+      --modules-path=/usr/lib/nginx/modules \
+      --conf-path=/etc/nginx/nginx.conf \
+      --pid-path=/var/run/nginx/nginx.pid \
+      --lock-path=/var/run/nginx/nginx.lock \
+      --error-log-path=/config/log/nginx/error.log \
+      --http-log-path=/config/log/nginx/access.log \
       \
       --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
       \
-      --user=$BASENAME \
-      --group=$BASENAME \
+      --user=nginx \
+      --group=nginx \
       \
       --with-compat \
       --with-file-aio \
@@ -85,14 +83,14 @@ RUN set -ex; \
     make -j ${nproc}; \
     make -j $(nproc) install; \
     \
-    mkdir -p /openresty/etc/$BASENAME \
+    mkdir -p /openresty/etc/nginx \
       /openresty/usr/sbin \
-      /openresty/usr/lib/$BASENAME \
+      /openresty/usr/lib/nginx \
       /openresty/usr/lib/perl5; \
     \
-    cp -r -L -n /etc/$BASENAME /openresty/etc/$BASENAME; \
-    cp -r -L -n /usr/lib/$BASENAME /openresty/usr/lib/$BASENAME; \
-    cp -r -L -n /usr/sbin/$BASENAME /openresty/usr/sbin/$BASENAME; \
+    cp -r -L -n /etc/nginx /openresty/etc/nginx; \
+    cp -r -L -n /usr/lib/nginx /openresty/usr/lib/nginx; \
+    cp -r -L -n /usr/sbin/nginx /openresty/usr/sbin/nginx; \
     cp -r -L -n /usr/lib/perl5 /openresty/usr/lib/perl5; \
     \
     # build lib files
