@@ -125,7 +125,6 @@ RUN set -ex; \
         ./configure \
           --prefix=/usr \
           --sysconfdir=/etc \
-          --rocks-tree=/usr/local \
           --with-lua=/usr/lib/nginx/luajit \
           --with-lua-include=/usr/lib/nginx/luajit/include/luajit-2.1 \
         ; \
