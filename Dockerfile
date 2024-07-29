@@ -41,11 +41,6 @@ RUN set -ex; \
       --error-log-path=$CONFIG_PATH/log/$BASENAME/error.log \
       --http-log-path=$CONFIG_PATH/log/$BASENAME/access.log \
       \
-      --http-client-body-temp-path=/var/tmp/$BASENAME/client_body \
-      --http-proxy-temp-path=/var/tmp/$BASENAME/proxy \
-      --http-fastcgi-temp-path=/var/tmp/$BASENAME/fastcgi \
-      --http-uwsgi-temp-path=/var/tmp/$BASENAME/uwsgi \
-      --http-scgi-temp-path=/var/tmp/$BASENAME/scgi \
       --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
       \
       --user=$BASENAME \
