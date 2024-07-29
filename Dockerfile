@@ -41,7 +41,7 @@ RUN set -ex; \
       --error-log-path=$CONFIG_PATH/log/$BASENAME/error.log \
       --http-log-path=$CONFIG_PATH/log/$BASENAME/access.log \
       \
-      --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
+      --with-perl_modules_path=$PREFIX/usr/lib/perl5/vendor_perl \
       \
       --user=$BASENAME \
       --group=$BASENAME \
