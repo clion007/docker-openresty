@@ -85,6 +85,7 @@ RUN set -ex; \
       --with-stream_ssl_module \
       --with-stream_ssl_preread_module \
       --with-threads \
+      --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
     ; \
     make -j ${nproc}; \
     make -j $(nproc) install; \
