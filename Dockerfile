@@ -167,7 +167,6 @@ RUN set -ex; \
     pcre \
     perl \
     geoip \
-    luajit \
     logrotate \
   ; \
   apk add --no-cache --virtual .user-deps \
