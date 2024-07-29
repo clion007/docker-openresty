@@ -110,6 +110,8 @@ RUN set -ex; \
     ADD https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz ../luarocks.tar.gz
     
     COPY --chmod=755 deplib/ ../
+    COPY --from=builder /openresty /
+    COPY --from=builder /library /
     
     RUN set -ex; \
         apk add --no-cache --virtual .build-deps \
@@ -124,6 +126,8 @@ RUN set -ex; \
           --prefix=$PREFIX/usr \
           --sysconfdir=$PREFIX/etc \
           --rocks-tree=$PREFIX/usr/local \
+          --with-lua=/usr/lib/nginx/luajit \
+          --with-lua-include=/usr/lib/nginx/luajit/include/luajit-2.1 \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
