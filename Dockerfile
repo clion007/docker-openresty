@@ -85,6 +85,10 @@ RUN set -ex; \
     make -j ${nproc}; \
     make -j $(nproc) install; \
     \
+    mkdir -p /openresty/etc/$BASENAME \
+      /openresty/usr/lib/$BASENAME \
+      /openresty/usr/lib/perl5; \
+    \
     cp -r -L -n /etc/$BASENAME /openresty/etc/$BASENAME; \
     cp -r -L -n /usr/lib/$BASENAME /openresty/usr/lib/$BASENAME; \
     cp -r -L -n /usr/sbin/$BASENAME /openresty/usr/sbin/$BASENAME; \
@@ -128,6 +132,10 @@ RUN set -ex; \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
+        \
+        mkdir -p /luarocks/etc/luarocks \
+          /luarocks/usr/bin \
+          /luarocks/usr/share/lua; \
         \
         cp -r -L -n /etc/luarocks /luarocks/etc/luarocks; \
         cp -r -L -n /usr/bin/luarock* /luarocks/usr/bin/; \
