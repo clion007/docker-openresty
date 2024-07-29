@@ -158,7 +158,7 @@ LABEL mantainer="Clion Nihe Email: clion007@126.com"
 ARG BRANCH="edge"
 
 # Add additional binaries into PATH for convenience
-# ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
+ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
 # ENV LUA_PATH="/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua"
 
 # add openresty files
@@ -189,8 +189,7 @@ RUN set -ex; \
   # set openresty process user and group
   groupadd -g 101 nginx; \
   useradd -u 100 -s /bin/nologin -M -g 101 nginx; \
-  ln -s /usr/lib/nginx/bin/openresty /usr/bin/openresty; \
-  chown nginx:nginx /usr/bin/openresty; \
+  chown nginx:nginx /usr/lib/nginx/bin/openresty; \
   \
   # make dir for config and data
   mkdir -p /config; \
