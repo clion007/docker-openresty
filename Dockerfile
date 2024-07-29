@@ -86,6 +86,7 @@ RUN set -ex; \
     make -j $(nproc) install; \
     \
     mkdir -p /openresty/etc/$BASENAME \
+      /openresty/usr/sbin \
       /openresty/usr/lib/$BASENAME \
       /openresty/usr/lib/perl5; \
     \
