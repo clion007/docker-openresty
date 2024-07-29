@@ -4,7 +4,6 @@
 FROM alpine AS builder
 
 ARG OPENRESTY_VERSION
-ARG PREFIX="/openresty"
 ARG BASENAME="nginx"
 ARG CONFIG_PATH="/config"
 
@@ -32,16 +31,16 @@ RUN set -ex; \
     ; \
     tar xf ../openresty.tar.gz --strip-components=1; \
     ./configure \
-      --prefix=$PREFIX/usr/lib/$BASENAME \
-      --sbin-path=$PREFIX/usr/sbin/$BASENAME \
-      --modules-path=$PREFIX/usr/sbin/$BASENAME/modules \
-      --conf-path=$PREFIX/etc/$BASENAME/$BASENAME.conf \
+      --prefix=/usr/lib/$BASENAME \
+      --sbin-path=/usr/sbin/$BASENAME \
+      --modules-path=/usr/sbin/$BASENAME/modules \
+      --conf-path=/etc/$BASENAME/$BASENAME.conf \
       --pid-path=/var/run/$BASENAME/$BASENAME.pid \
       --lock-path=/var/run/$BASENAME/$BASENAME.lock \
       --error-log-path=$CONFIG_PATH/log/$BASENAME/error.log \
       --http-log-path=$CONFIG_PATH/log/$BASENAME/access.log \
       \
-      --with-perl_modules_path=$PREFIX/usr/lib/perl5/vendor_perl \
+      --with-perl_modules_path=/usr/lib/perl5/vendor_perl \
       \
       --user=$BASENAME \
       --group=$BASENAME \
@@ -86,8 +85,13 @@ RUN set -ex; \
     make -j ${nproc}; \
     make -j $(nproc) install; \
     \
+    cp -r -L -n /etc/$BASENAME /openresty/etc/$BASENAME; \
+    cp -r -L -n /usr/lib/$BASENAME /openresty/usr/lib/$BASENAME; \
+    cp -r -L -n /usr/sbin/$BASENAME /openresty/usr/sbin/$BASENAME; \
+    cp -r -L -n /usr/lib/perl5 /openresty/usr/lib/perl5; \
+    \
     # build lib files
-    ../cplibfiles.sh $PREFIX/usr/lib/nginx/bin/openresty /library; \
+    ../cplibfiles.sh /usr/lib/nginx/bin/openresty /library; \
     apk del --no-network .build-deps; \
     rm -rf \
         /var/cache/apk/* \
