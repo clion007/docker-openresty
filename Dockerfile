@@ -103,7 +103,7 @@ RUN set -ex; \
     
     ARG LUAROCKS_VERSION
     ARG PREFIX="/luarocks"
-    ARG LUAVERSION="5.4"
+    # ARG LUAVERSION="5.4"
     
     WORKDIR /tmp/luarocks
     
@@ -117,9 +117,9 @@ RUN set -ex; \
         apk add --no-cache --virtual .build-deps \
           perl-dev \
           build-base \
-          luajit-dev \
+          # luajit-dev \
           linux-headers \
-          lua${LUAVERSION}-dev \
+          # lua${LUAVERSION}-dev \
         ; \
         tar xf ../luarocks.tar.gz --strip-components=1; \
         ./configure \
