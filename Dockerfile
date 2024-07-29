@@ -16,6 +16,7 @@ COPY --chmod=755 deplib/ ../
 
 RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
+      make \
       linux-headers \
       gd-dev \
       geoip-dev \
