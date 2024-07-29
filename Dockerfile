@@ -151,6 +151,7 @@ ARG BRANCH="edge"
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
+ENV LUA_PATH=/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;
 
 # add openresty files
 COPY --from=builder /openresty /
