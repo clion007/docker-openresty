@@ -33,7 +33,7 @@ RUN set -ex; \
     ./configure \
       --prefix=/usr/lib/$BASENAME \
       --sbin-path=/usr/sbin/$BASENAME \
-      --modules-path=/usr/sbin/$BASENAME/modules \
+      --modules-path=/usr/lib/$BASENAME/modules \
       --conf-path=/etc/$BASENAME/$BASENAME.conf \
       --pid-path=/var/run/$BASENAME/$BASENAME.pid \
       --lock-path=/var/run/$BASENAME/$BASENAME.lock \
@@ -103,7 +103,6 @@ RUN set -ex; \
     FROM alpine AS luarocks
     
     ARG LUAROCKS_VERSION
-    ARG PREFIX="/luarocks"
     
     WORKDIR /tmp/luarocks
     
@@ -121,17 +120,21 @@ RUN set -ex; \
         ; \
         tar xf ../luarocks.tar.gz --strip-components=1; \
         ./configure \
-          --prefix=$PREFIX/usr \
-          --sysconfdir=$PREFIX/etc \
-          --rocks-tree=$PREFIX/usr/local \
+          --prefix=/usr \
+          --sysconfdir=/etc \
+          --rocks-tree=/usr/local \
           --with-lua=/usr/lib/nginx/luajit \
           --with-lua-include=/usr/lib/nginx/luajit/include/luajit-2.1 \
         ; \
         make -j ${nproc}; \
         make -j $(nproc) install; \
         \
+        cp -r -L -n /etc/luarocks /luarocks/etc/luarocks; \
+        cp -r -L -n /usr/bin/luarock* /luarocks/usr/bin/; \
+        cp -r -L -n /usr/share/lua /luarocks/usr/share/lua; \
+        \
         # build lib files
-        ../cplibfiles.sh $PREFIX/usr/bin/luarocks /library; \
+        ../cplibfiles.sh /usr/bin/luarocks /library; \
         apk del --no-network .build-deps; \
         rm -rf \
             /var/cache/apk/* \
@@ -147,8 +150,8 @@ LABEL mantainer="Clion Nihe Email: clion007@126.com"
 ARG BRANCH="edge"
 
 # Add additional binaries into PATH for convenience
-ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
-ENV LUA_PATH="/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua"
+# ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
+# ENV LUA_PATH="/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua"
 
 # add openresty files
 COPY --from=builder /openresty /
@@ -167,7 +170,6 @@ RUN set -ex; \
     pcre \
     perl \
     geoip \
-    lua5.1 \
     logrotate \
   ; \
   apk add --no-cache --virtual .user-deps \
