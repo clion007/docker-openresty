@@ -34,8 +34,7 @@ RUN set -ex; \
     ./configure \
       --prefix=$PREFIX/usr/lib/$BASENAME \
       --sbin-path=$PREFIX/usr/sbin/$BASENAME \
-      --libdir=lib \
-      --modules-path=modules \
+      --modules-path=$PREFIX/usr/sbin/$BASENAME/modules \
       --conf-path=$PREFIX/etc/$BASENAME/$BASENAME.conf \
       --pid-path=/var/run/$BASENAME/$BASENAME.pid \
       --lock-path=/var/run/$BASENAME/$BASENAME.lock \
@@ -106,7 +105,6 @@ RUN set -ex; \
     
     ARG LUAROCKS_VERSION
     ARG PREFIX="/luarocks"
-    # ARG LUAVERSION="5.4"
     
     WORKDIR /tmp/luarocks
     
