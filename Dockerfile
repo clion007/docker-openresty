@@ -9,6 +9,8 @@ WORKDIR /tmp/openresty
 
 ADD https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz ../openresty.tar.gz
 
+COPY --chmod=755 deplib/ ../
+
 RUN set -ex; \
     apk add --no-cache --virtual .build-deps \
       build-base \
@@ -91,6 +93,8 @@ RUN set -ex; \
     cp -r -L -n /usr/sbin/nginx /openresty/usr/sbin/nginx; \
     cp -r -L -n /usr/lib/perl5/* /openresty/usr/lib/perl5/; \
     \
+    # build lib files
+    ../cplibfiles.sh /usr/lib/nginx/bin/openresty /library; \
     apk del --no-network .build-deps; \
     rm -rf \
         /var/cache/apk/* \
@@ -135,8 +139,6 @@ RUN set -ex; \
         cp -r -L -n /usr/bin/luarock* /luarocks/usr/bin/; \
         cp -r -L -n /usr/share/lua/* /luarocks/usr/share/lua/; \
         \
-        # build lib files
-        ../cplibfiles.sh /usr/bin/luarocks /library; \
         apk del --no-network .build-deps; \
         rm -rf \
             /var/cache/apk/* \
