@@ -170,6 +170,7 @@ RUN set -ex; \
   apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/main \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
+    curl \
     pcre \
     perl \
     geoip \
