@@ -111,7 +111,6 @@ RUN set -ex; \
     
     ADD https://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz ../luarocks.tar.gz
     
-    COPY --chmod=755 deplib/ ../
     COPY --from=builder /openresty /
     COPY --from=builder /library /
     
@@ -156,8 +155,8 @@ ARG BRANCH="edge"
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
-ENV LUA_PATH="/usr/lib/nginx/lualib/?.lua;/usr/lib/nginx/lualib/?/init.lua;./?.lua;/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua"
-ENV LUA_CPATH="/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?/?.so;./?.so;/usr/lib/lua/5.1/?.so"
+# ENV LUA_PATH="/usr/lib/nginx/lualib/?.lua;/usr/lib/nginx/lualib/?/init.lua;./?.lua;/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua"
+# ENV LUA_CPATH="/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?/?.so;./?.so;/usr/lib/lua/5.1/?.so"
 
 # add openresty files
 COPY --from=builder /openresty /
@@ -172,7 +171,7 @@ RUN set -ex; \
   apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/main \
     --repository=http://dl-cdn.alpinelinux.org/alpine/$BRANCH/community \
-    # curl \
+    curl \
     pcre \
     perl \
     geoip \
