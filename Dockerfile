@@ -139,6 +139,9 @@ RUN set -ex; \
         cp -r -L -n /usr/bin/luarock* /luarocks/usr/bin/; \
         cp -r -L -n /usr/share/lua/* /luarocks/usr/share/lua/; \
         \
+        # fix https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/48613 issues
+        sed -i '/WGET/d' /luarocks/usr/share/lua/5.1/luarocks/fs/tools.lua \
+        \
         apk del --no-network .build-deps; \
         rm -rf \
             /var/cache/apk/* \
