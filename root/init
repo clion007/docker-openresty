@@ -8,7 +8,7 @@ mkdir -p \
     /config/keys \
     /config/log/nginx \
     /config/nginx/conf.d \
-    /var/run/openresty \
+    /var/run/nginx \
     /var/tmp/nginx/proxy \
     /var/tmp/nginx/client_body
 
@@ -19,7 +19,7 @@ chown -R nginx:nginx \
     /config/nginx \
     /var/tmp/nginx \
     /config/log/nginx \
-    /var/run/openresty
+    /var/run/nginx
 
 chmod -R g+w \
     /www
