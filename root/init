@@ -17,9 +17,9 @@ chown -R nginx:nginx \
     /config/www \
     /config/keys \
     /config/nginx \
-    /var/tmp/nginx \
     /config/log/nginx \
-    /var/run/nginx
+    /var/run/nginx \
+    /var/tmp/nginx 
 
 chmod -R g+w \
     /www
