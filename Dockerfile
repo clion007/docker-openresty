@@ -160,7 +160,6 @@ ENV LUA_CPATH="/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?/?.so;./?.so;/u
 COPY --from=builder /openresty /
 COPY --from=builder /library /
 COPY --from=luarocks /luarocks /
-COPY --from=luarocks /library /
 
 # add local files
 COPY --chmod=755 root/ /
