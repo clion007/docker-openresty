@@ -89,11 +89,11 @@ http {
 
     # See Move default writable paths to a dedicated directory (#119)
     # https://github.com/openresty/docker-openresty/issues/119
-    client_body_temp_path /var/run/openresty/nginx-client-body;
-    proxy_temp_path       /var/run/openresty/nginx-proxy;
-    fastcgi_temp_path     /var/run/openresty/nginx-fastcgi;
-    uwsgi_temp_path       /var/run/openresty/nginx-uwsgi;
-    scgi_temp_path        /var/run/openresty/nginx-scgi;
+    client_body_temp_path /var/tmp/nginx/nginx-client-body;
+    proxy_temp_path       /var/tmp/nginx/nginx-proxy;
+    fastcgi_temp_path     /var/tmp/nginx/nginx-fastcgi;
+    uwsgi_temp_path       /var/tmp/nginx/nginx-uwsgi;
+    scgi_temp_path        /var/tmp/nginx/nginx-scgi;
 
     limit_conn_zone $binary_remote_addr zone=perip:10m;
     limit_conn_zone $server_name zone=perserver:10m;

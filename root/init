@@ -9,8 +9,7 @@ mkdir -p \
     /config/log/nginx \
     /config/nginx/conf.d \
     /var/run/nginx \
-    /var/tmp/nginx/proxy \
-    /var/tmp/nginx/client_body
+    /var/tmp/nginx
 
 # permissions
 chown -R nginx:nginx \
