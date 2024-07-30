@@ -158,8 +158,13 @@ ARG BRANCH="edge"
 
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/lib/nginx/luajit/bin:/usr/lib/nginx/bin
-ENV LUA_PATH="/usr/lib/nginx/lualib/?.lua;/usr/lib/nginx/lualib/?/init.lua;./?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua"
-ENV LUA_CPATH="/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/lib/lua/5.1/?.so"
+
+# Add LuaRocks paths
+# If OpenResty changes, these may need updating:
+#    /usr/local/openresty/bin/resty -e 'print(package.path)'
+#    /usr/local/openresty/bin/resty -e 'print(package.cpath)'
+ENV LUA_PATH="/usr/lib/nginx/site/lualib/?.ljbc;/usr/lib/nginx/site/lualib/?/init.ljbc;/usr/lib/nginx/lualib/?.ljbc;/usr/lib/nginx/lualib/?/init.ljbc;/usr/lib/nginx/site/lualib/?.lua;/usr/lib/nginx/site/lualib/?/init.lua;/usr/lib/nginx/lualib/?.lua;/usr/lib/nginx/lualib/?/init.lua;/usr/lib/nginx/lualib/?.lua;/usr/lib/nginx/lualib/?/init.lua;./?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/share/luajit-2.1/?.lua;/usr/share/lua/5.1/?.lua"
+ENV LUA_CPATH="/usr/lib/nginx/site/lualib/?.so;/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?.so;/usr/lib/nginx/lualib/?/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/lib/lua/5.1/?.so"
 
 # add openresty files
 COPY --from=builder /openresty /
