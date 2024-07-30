@@ -16,7 +16,7 @@ jobs:
     - name: Get latest version of  y
       id: getVersion
       run: |
-        version=$(wget -qO- -t1 -T2 https://api.github.com/repos/openresty/openresty/releases/latest | grep '"name"' | awk -F "\"" '{printf $4}')
+        version=$(wget -qO- -t1 -T2 https://api.github.com/repos/openresty/openresty/releases/latest | grep "tag_name" | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
         echo "curentVersion=$version" >> $GITHUB_OUTPUT
 
     - name: Compare openresty version
