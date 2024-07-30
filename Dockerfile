@@ -227,4 +227,4 @@ EXPOSE 80 443 8080 8443
 STOPSIGNAL SIGQUIT
 
 # entrypoint set in clion007/alpine base image
-CMD [""-g","daemon off;""]
+CMD ["-g","daemon off;"]
