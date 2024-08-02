@@ -3,7 +3,6 @@ set -e
 
 # make folders
 mkdir -p \
-    /www \
     /config/www \
     /config/keys \
     /config/log/nginx \
@@ -19,9 +18,6 @@ chown -R nginx:nginx \
     /config/log/nginx \
     /var/run/nginx \
     /var/tmp/nginx 
-
-chmod -R g+w \
-    /www
     
 chmod -R 644 /etc/logrotate.d
 
