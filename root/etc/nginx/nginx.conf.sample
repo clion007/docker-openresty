@@ -33,8 +33,8 @@ http {
     # Sets the path, format, and configuration for a buffered log write.
     access_log /config/log/nginx/access.log;
     # log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-    #                  '$status $body_bytes_sent "$http_referer" '
-    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+    #                   '$status $body_bytes_sent "$http_referer" '
+    #                   '"$http_user_agent" "$http_x_forwarded_for"';
 
     # Name servers used to resolve names of upstream servers into addresses.
     # It's also needed when using tcpsocket and udpsocket in Lua modules.
