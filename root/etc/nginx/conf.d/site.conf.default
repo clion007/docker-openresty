@@ -20,16 +20,16 @@ server {
 
     location / {
         # enable for basic auth
-        #auth_basic "Restricted";
-        #auth_basic_user_file /config/nginx/.htpasswd;
+        # auth_basic "Restricted";
+        # auth_basic_user_file /config/nginx/.htpasswd;
 
         try_files $uri $uri/ /index.html /index.htm /index.php$is_args$args;
     }
 
     location ~ ^(.+\.php)(.*)$ {
         # enable the next two lines for http auth
-        #auth_basic "Restricted";
-        #auth_basic_user_file /config/nginx/.htpasswd;
+        # auth_basic "Restricted";
+        # auth_basic_user_file /config/nginx/.htpasswd;
 
         fastcgi_split_path_info ^(.+\.php)(.*)$;
         if (!-f $document_root$fastcgi_script_name) { return 404; }
