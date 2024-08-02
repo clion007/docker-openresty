@@ -9,8 +9,6 @@ server {
 
     server_name _;
 
-    # include /config/nginx/ssl.conf;
-
     set $root /app/www/public;
     if (!-d /app/www/public) {
         set $root /config/www;
