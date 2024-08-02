@@ -4,7 +4,7 @@ set -e
 # make folders
 mkdir -p \
     /config/www \
-    /config/keys \
+    #/config/keys \
     /config/log/nginx \
     /config/nginx/conf.d \
     /var/run/nginx \
@@ -13,7 +13,7 @@ mkdir -p \
 # permissions
 chown -R nginx:nginx \
     /config/www \
-    /config/keys \
+    #/config/keys \
     /config/nginx \
     /config/log/nginx \
     /var/run/nginx \
