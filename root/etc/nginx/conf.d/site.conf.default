@@ -6,6 +6,7 @@ server {
 
     # listen 443 ssl http2 default_server;
     # listen [::]:443 ssl http2 default_server;
+    # include /config/nginx/ssl.conf;
 
     server_name _;
 
