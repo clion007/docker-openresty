@@ -88,9 +88,22 @@ http {
     # https://github.com/openresty/docker-openresty/issues/119
     client_body_temp_path /var/tmp/nginx/nginx-client-body;
     proxy_temp_path       /var/tmp/nginx/nginx-proxy;
-    fastcgi_temp_path     /var/tmp/nginx/nginx-fastcgi;
     uwsgi_temp_path       /var/tmp/nginx/nginx-uwsgi;
     scgi_temp_path        /var/tmp/nginx/nginx-scgi;
+    fastcgi_temp_path     /var/tmp/nginx/nginx-fastcgi;
+    fastcgi_cache_path    /var/tmp/nginx/fastcgi_cache levels=1:2 keys_zone=TEST:10m inactive=5m;
+    fastcgi_cache_key "$scheme$request_method$host$request_uri";
+    fastcgi_connect_timeout 300; 
+    fastcgi_send_timeout 300; 
+    fastcgi_read_timeout 300; 
+    fastcgi_buffer_size 64k; 
+    fastcgi_buffers 16 64k; 
+    fastcgi_busy_buffers_size 128k; 
+    fastcgi_temp_file_write_size 128k; 
+    fastcgi_cache TEST; 
+    fastcgi_cache_valid 200 302 1h; 
+    fastcgi_cache_valid 301 1d; 
+    fastcgi_cache_valid any 1m;
 
     limit_conn_zone $binary_remote_addr zone=perip:10m;
     limit_conn_zone $server_name zone=perserver:10m;
