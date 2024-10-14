@@ -51,6 +51,7 @@ jobs:
         password: ${{ secrets.ALIYUN_TOKEN }}
 
     - name: Build and Push Docker images
+      id: build
       uses: docker/build-push-action@v6
       with:
         file: Dockerfile
@@ -64,6 +65,13 @@ jobs:
           clion007/openresty:${{ steps.getVersion.outputs.openrestyVersion }}
           registry.cn-chengdu.aliyuncs.com/clion/openresty:latest
           registry.cn-chengdu.aliyuncs.com/clion/openresty:${{ steps.getVersion.outputs.openrestyVersion }}
+      
+    - name: Publish Release
+      if: steps.build.outcome == 'success'
+      uses: ncipollo/release-action@v1
+      with:
+        name: Openresty v${{ steps.getVersion.outputs.openrestyVersion }}
+        tag: v${{ steps.getVersion.outputs.openrestyVersion }}
         
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
