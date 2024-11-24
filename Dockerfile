@@ -20,7 +20,7 @@ RUN set -ex; \
       libxml2-dev \
       libxslt-dev \
       linux-headers \
-	    luajit-dev \
+      luajit-dev \
       openssl-dev \
       pcre-dev \
       perl-dev \
