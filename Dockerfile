@@ -199,7 +199,7 @@ RUN set -ex; \
   # make dir for config and data
   mkdir -p /config; \
   chown nginx:nginx /config; \
-  \  
+  \
   # configure nginx
   echo '# https://httpoxy.org/\n \
 fastcgi_param  HTTP_PROXY         "";\n \
