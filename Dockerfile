@@ -201,16 +201,16 @@ RUN set -ex; \
   chown nginx:nginx /config; \
   \  
   # configure nginx
-  echo '# https://httpoxy.org/\n\
-fastcgi_param  HTTP_PROXY         "";\n\
-# http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_split_path_info\n\
-fastcgi_param  PATH_INFO          $fastcgi_path_info;\n\
-# https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/#connecting-nginx-to-php-fpm\n\
-fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;\n\
-# Send HTTP_HOST as SERVER_NAME. If HTTP_HOST is blank, send the value of server_name from nginx (default is `_`)\n\
+  echo '# https://httpoxy.org/\n \
+fastcgi_param  HTTP_PROXY         "";\n \
+# http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_split_path_info\n \
+fastcgi_param  PATH_INFO          $fastcgi_path_info;\n \
+# https://www.nginx.com/resources/wiki/start/topics/examples/phpfcgi/#connecting-nginx-to-php-fpm\n \
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;\n \
+# Send HTTP_HOST as SERVER_NAME. If HTTP_HOST is blank, send the value of server_name from nginx (default is `_`)\n \
 fastcgi_param  SERVER_NAME        $host;' >> \
-    /etc/nginx/fastcgi_params; \
-
+  /etc/nginx/fastcgi_params; \
+  \
   # fix logrotate
   sed -i "s#/var/log/messages {}.*# #g" \
     /etc/logrotate.conf; \
