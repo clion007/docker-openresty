@@ -147,7 +147,7 @@ RUN set -ex; \
             /var/cache/apk/* \
             /var/tmp/* \
             ../* \
-        ;    
+        ;
 
 # Build the final combined image
 FROM clion007/alpine
