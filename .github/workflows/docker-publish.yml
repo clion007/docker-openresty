@@ -72,6 +72,7 @@ jobs:
       with:
         name: Openresty v${{ steps.getVersion.outputs.openrestyVersion }}
         tag: v${{ steps.getVersion.outputs.openrestyVersion }}
+        skipIfReleaseExists: true
         
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
