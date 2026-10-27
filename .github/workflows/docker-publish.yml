@@ -25,13 +25,13 @@ jobs:
       id: getVersion
       run: |
         if [ -z ${{ inputs.OPENRESTY_VERSION }} ]; then
-          OPENRESTY_VERSION=$(wget -qO- -t1 -T2 https://api.github.com/repos/openresty/openresty/releases/latest | grep "tag_name" | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
+          OPENRESTY_VERSION=$(wget -qO- -t1 -T2 https://openresty.org/en/download.html | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' | sort -uV | tail -n1)
         else
           OPENRESTY_VERSION=${{ inputs.OPENRESTY_VERSION }}
         fi
         echo "openrestyVersion=$OPENRESTY_VERSION" >> $GITHUB_OUTPUT
         if [ -z ${{ inputs.LUAROCKS_VERSION }} ]; then
-          LUAROCKS_VERSION=$(wget -qO- -t1 -T2 https://api.github.com/repos/luarocks/luarocks/tags | grep "name" | head -n 1 | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
+          LUAROCKS_VERSION=$(wget -qO- -t1 -T2 https://luarocks.github.io/luarocks/releases/ | grep -oP 'luarocks-\K[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' | sort -uV | tail -n1)
         else
           LUAROCKS_VERSION=${{ inputs.LUAROCKS_VERSION }}
         fi

@@ -13,10 +13,10 @@ jobs:
 
     steps:
 
-    - name: Get latest version of  y
+    - name: Get latest OpenResty version
       id: getVersion
       run: |
-        version=$(wget -qO- -t1 -T2 https://api.github.com/repos/openresty/openresty/releases/latest | grep "tag_name" | awk -F "\"" '{printf $4}'| awk -F "v" '{printf $2}')
+        version=$(wget -qO- -t1 -T2 https://openresty.org/en/download.html | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' | sort -uV | tail -n1)
         echo "curentVersion=$version" >> $GITHUB_OUTPUT
 
     - name: Compare openresty version
