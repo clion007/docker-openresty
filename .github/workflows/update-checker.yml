@@ -16,20 +16,28 @@ jobs:
     - name: Get latest OpenResty version
       id: getVersion
       run: |
-        version=$(wget -qO- -t1 -T2 https://openresty.org/en/download.html | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' | sort -uV | tail -n1)
-        echo "curentVersion=$version" >> $GITHUB_OUTPUT
+        set -o pipefail
+        version=$(wget -qO- -t3 -T15 https://openresty.org/en/download.html \
+          | grep -oP 'openresty-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' \
+          | sort -uV | tail -n1)
+        echo "fetched version=[$version]"
+        if [ -z "$version" ]; then
+          echo "::error::Failed to fetch OpenResty version"
+          exit 1
+        fi
+        echo "curentVersion=$version" >> "$GITHUB_OUTPUT"
 
     - name: Compare openresty version
       id: cacheVersion
       uses: actions/cache@v6
       with:
-        path: .curentVersion
-        key: ${{ steps.getVersion.outputs.curentVersion }}
+        path: .currentVersion
+        key: ${{ steps.getVersion.outputs.currentVersion }}
 
     - name: Save New Curent Version
       if: steps.cacheVersion.outputs.cache-hit != 'true'
       run: |
-        echo ${{ steps.getVersion.outputs.curentVersion }} | tee .curentVersion
+        echo ${{ steps.getVersion.outputs.currentVersion }} | tee .currentVersion
 
     - name: Trigger build
       if: steps.cacheVersion.outputs.cache-hit != 'true'
