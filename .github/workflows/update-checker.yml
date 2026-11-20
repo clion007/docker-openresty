@@ -25,7 +25,7 @@ jobs:
           echo "::error::Failed to fetch OpenResty version"
           exit 1
         fi
-        echo "curentVersion=$version" >> "$GITHUB_OUTPUT"
+        echo "currentVersion=$version" >> "$GITHUB_OUTPUT"
 
     - name: Compare openresty version
       id: cacheVersion
